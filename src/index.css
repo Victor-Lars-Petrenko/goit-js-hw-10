@@ -4,6 +4,7 @@ body {
     line-height: 1.5;
     font-family: 'Roboto', sans-serif;
     padding: 20px;
+    margin: 0;
 }
 
 .cat-info {
