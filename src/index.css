@@ -1,0 +1,48 @@
+body {
+    box-sizing: border-box;
+    color: #1E1823;
+    line-height: 1.5;
+    font-family: 'Roboto', sans-serif;
+    padding: 20px;
+}
+
+.cat-info {
+    display: flex;
+    gap: 20px;
+    padding-top: 20px;
+}
+
+.breed-select {
+    display: block;
+}
+
+.header {
+    color: #FD9222;
+}
+
+.pretty-loader {
+    margin-top: 20px;
+    display: block;
+    width: 48px;
+    height: 48px;
+    border: 5px solid #FD9222;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.visually-hidden {
+    display: none;
+}
