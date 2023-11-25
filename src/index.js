@@ -1,4 +1,5 @@
-import axios from "axios";
+import { fetchBreeds, fetchCatByBreed } from './cat-api';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const refs = {
     breedSelect: document.querySelector('.breed-select'),
@@ -6,22 +7,42 @@ const refs = {
     prettyLoader: document.querySelector('.pretty-loader')
 }
 
-refs.prettyLoader.classList.toggle("visually-hidden");
-refs.breedSelect.classList.toggle("visually-hidden");
+refs.breedSelect.classList.add("visually-hidden");
 
-axios.defaults.headers.common["x-api-key"] = "live_OVlKLYt6fHZ3QN25vYrhHQ201FNyMPqHO89IYO3FW0HmkTjkCF3B3wNmRRd3IQ0k";
+fetchBreeds().then(({ data }) => {
+    const str = data.map(({ name, id }) => `<option value="${id}">${name}</option>`).join('');
+    refs.breedSelect.insertAdjacentHTML('beforeend', str);
 
-function fetchBreeds() {
     refs.prettyLoader.classList.toggle("visually-hidden");
-
-    return axios.get('https://api.thecatapi.com/v1/breeds');
-}
-
-function fetchCatByBreed(breedId) {
+    refs.breedSelect.classList.remove("visually-hidden");
+}).catch(() => {
+    Notify.failure('Oops! Something went wrong! Try reloading the page!');
     refs.prettyLoader.classList.toggle("visually-hidden");
-    refs.catInfo.classList.toggle("visually-hidden");
+})
 
-    return axios.get(`https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`);
-}
+refs.breedSelect.addEventListener('change', e => {
+    refs.prettyLoader.classList.toggle("visually-hidden");
+    refs.catInfo.classList.add("visually-hidden");
 
-export { fetchBreeds, fetchCatByBreed, refs };
+    const breedId = e.target.value;
+
+    fetchCatByBreed(breedId).then(({ data }) => {
+        const { breeds, url } = data[0];
+        const { description, name, temperament } = breeds[0];
+
+        const str =
+            `<img src="${url}" alt="${name}" width="550px" heigth=""/>
+            <div>
+                <h1 class="header">${name}</h1>
+                <p>${description}</p>
+                <p><b class="header">Temperament:</b> ${temperament}</p>
+            </div>`;
+        refs.catInfo.innerHTML = str;
+
+        refs.prettyLoader.classList.toggle("visually-hidden");
+        refs.catInfo.classList.remove("visually-hidden");
+    }).catch(() => {
+        Notify.failure('Oops! Something went wrong! Try reloading the page!');
+        refs.prettyLoader.classList.toggle("visually-hidden");
+    })
+})

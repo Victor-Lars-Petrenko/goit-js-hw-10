@@ -1,37 +1,13 @@
-import { fetchBreeds, fetchCatByBreed, refs } from './index';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import axios from "axios";
 
-fetchBreeds().then(({data}) => {
-    const str = data.map(({ name, id }) => `<option value="${id}">${name}</option>`).join('');
-    refs.breedSelect.insertAdjacentHTML('beforeend', str);
+axios.defaults.headers.common["x-api-key"] = "live_OVlKLYt6fHZ3QN25vYrhHQ201FNyMPqHO89IYO3FW0HmkTjkCF3B3wNmRRd3IQ0k";
 
-    refs.prettyLoader.classList.toggle("visually-hidden");
-    refs.breedSelect.classList.toggle("visually-hidden");
-}).catch((err) => {
-    Notify.failure('Oops! Something went wrong! Try reloading the page!');
-    refs.prettyLoader.classList.toggle("visually-hidden");
-})
+function fetchBreeds() {
+    return axios.get('https://api.thecatapi.com/v1/breeds');
+}
 
-refs.breedSelect.addEventListener('change', e => {
-    const breedId = e.target.value;
+function fetchCatByBreed(breedId) {
+    return axios.get(`https://api.thecatapi.com/v1/images/search?breed_ids=${breedId}`);
+}
 
-    fetchCatByBreed(breedId).then(({ data }) => {
-        const { breeds, url } = data[0];
-        const { description, name, temperament } = breeds[0];
-
-        const str =
-            `<img src="${url}" alt="${name}" width="550px" heigth=""/>
-            <div>
-                <h1 class="header">${name}</h1>
-                <p>${description}</p>
-                <p><b class="header">Temperament:</b> ${temperament}</p>
-            </div>`
-        refs.catInfo.innerHTML = str;
-
-        refs.prettyLoader.classList.toggle("visually-hidden");
-        refs.catInfo.classList.toggle("visually-hidden");
-    }).catch((err) => {
-        Notify.failure('Oops! Something went wrong! Try reloading the page!');
-        refs.prettyLoader.classList.toggle("visually-hidden");
-    })
-})
+export { fetchBreeds, fetchCatByBreed };
